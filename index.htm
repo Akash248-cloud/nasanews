@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD"
+      crossorigin="anonymous"
+    />
+    <title>News NASA Flights</title>
+    <style>
+      .imgNews {
+        width: 20%;
+        height: 200px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container-fluid">
+      <div
+        id="carouselExampleIndicators"
+        class="carousel slide"
+        data-bs-ride="carousel"
+      >
+        <div class="carousel-indicators"></div>
+        <div class="carousel-inner"></div>
+
+        <button
+          class="carousel-control-prev"
+          type="button"
+          data-bs-target="#carouselExampleIndicators"
+          data-bs-slide="prev"
+        >
+          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Previous</span>
+        </button>
+        <button
+          class="carousel-control-next"
+          type="button"
+          data-bs-target="#carouselExampleIndicators"
+          data-bs-slide="next"
+        >
+          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Next</span>
+        </button>
+      </div>
+      <div class="row"></div>
+    </div>
+
+    <script>
+      let buildCarousel = function (imgUrl) {
+        let inner = document.getElementsByClassName("carousel-inner").item(0);
+
+        let crousel_item = document.createElement("div");
+        if (inner.getElementsByClassName("carousel-item").length == 0) {
+          crousel_item.className = "carousel-item active";
+        } else {
+          crousel_item.className = "carousel-item";
+        }
+
+        crousel_item.innerHTML = `<img src="${imgUrl}" class="d-block w-100" style="height:550px;" alt="...">`;
+
+        inner.appendChild(crousel_item);
+      };
+      let createDoc = function (
+        title,
+        id,
+        imgUrl,
+        summary,
+        site,
+        lastUpdate,
+        published
+      ) {
+        let formatedHtml = `<div class="card mb-3" style="max-width: 100vw;">
+  <div class="row g-0">
+    <div class="col-md-4">
+      <img src="${imgUrl}" style="height:250px; width:500px;" class="img-fluid rounded-start" alt="...">
+    </div>
+    <div class="col-md-8">
+      <div class="card-body">
+        <h5 class="card-title">${title}</h5>
+        <p class="card-text">${summary}</p>
+        <p class="card-text"><small class="text-muted">Published at ${published}</small></p>
+        <p class="card-text"><small class="text-muted">Last updated at ${lastUpdate}</small></p>
+        <a href="${site}" target="_blank" class="btn btn-primary">Goto News Source</a>
+      </div>
+    </div>
+  </div>
+</div>`;
+
+        let div = document.createElement("div");
+        div.id = id;
+        div.classList.add("col-12");
+        div.innerHTML = formatedHtml;
+        document.getElementsByClassName("row")[0].appendChild(div);
+      };
+
+      fetch("https://api.spaceflightnewsapi.net/v3/blogs").then((v) => {
+        v.json()
+          .then((obj) => {
+            console.table(obj);
+
+            let indicators = document
+              .getElementsByClassName("carousel-indicators")
+              .item(0);
+            for (m in obj) {
+              buildCarousel(obj[m].imageUrl);
+              createDoc(
+                obj[m].title,
+                obj[m].id,
+                obj[m].imageUrl,
+                obj[m].summary,
+                obj[m].url,
+                new Date(obj[m].updatedAt).toString(),
+                new Date(obj[m].publishedAt).toString()
+              );
+              let indicatorButton = document.createElement("button");
+              indicatorButton.type = "button";
+              indicatorButton.setAttribute(
+                "data-bs-target",
+                "#carouselExampleIndicators"
+              );
+              indicatorButton.setAttribute(`data-bs-slide-to`, "" + m);
+              if (indicators.getElementsByTagName("button").length == 0) {
+                indicatorButton.className = "active";
+                indicatorButton.setAttribute("aria-current", "true");
+              }
+
+              indicatorButton.setAttribute("aria-label", "Slide " + (m + 1));
+
+              indicators.appendChild(indicatorButton);
+            }
+          })
+          .catch((reason) => {
+            console.table(reason);
+          });
+      });
+    </script>
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN"
+      crossorigin="anonymous"
+    ></script>
+  </body>
+</html>
