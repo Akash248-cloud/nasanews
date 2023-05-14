@@ -1,6 +1,7 @@
 import java.util.Scanner;
 
-public class j {
+public class j
+{
     public static void main(String[] args) {
         System.out.println("Addition the two numbers\n");
         int num1, num2,sum;
